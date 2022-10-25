@@ -17,10 +17,9 @@ async function instalarRecursos( event ) {
         'index.html',
         'index.js',
         'app.webmanifest',
-        'src/img/favicon.ico',
-        'src/img/cervejaria-192.png',
-        'src/img/cervejaria-512.png',
-        'http://localhost:3000/teste',
+        'app/public/img/favicon.ico',
+        'app/public/img/cervejaria-192.png',
+        'app/public/img/cervejaria-512.png'
     ] );
 }
 
