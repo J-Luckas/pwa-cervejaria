@@ -14,12 +14,12 @@ const CACHE_V1 = 'v1';
 async function instalarRecursos( event ) {
     const cache = await self.caches.open( CACHE_V1 );
     cache.addAll( [
-        'index.html',
-        'index.js',
-        'app.webmanifest',
-        'app/public/img/favicon.ico',
-        'app/public/img/cervejaria-192.png',
-        'app/public/img/cervejaria-512.png'
+        '/index.html',
+        '/app.webmanifest',
+        'src/img/favicon.ico',
+        'src/img/cervejaria-192.png',
+        'src/img/cervejaria-512.png',
+        'src/pages/bebidas-table.html',
     ] );
 }
 
