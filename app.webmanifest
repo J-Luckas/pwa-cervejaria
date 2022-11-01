@@ -1,14 +1,14 @@
 {
-    "short_name": "CervejariaArtesanal",
     "name": "Cervejaria Artesanal",
+    "short_name": "cervejaria-artesanal",
     "description": "App para administrar cervejaria",
     "icons": [
         {
-          "src": "/app/public/img/cervejaria-192.png",
+          "src": "/src/img/cervejaria-192.png",
           "sizes": "192x192",
           "type": "image/png"
         }, {
-          "src": "/app/public/img/cervejaria-512.png",
+          "src": "/src/img/cervejaria-512.png",
           "sizes": "512x512",
           "type": "image/png"
         }
@@ -16,6 +16,7 @@
     "shortcuts": [],
     "start_url": "/",
     "scope": "/",
+    "orientation": "portrait",
     "display": "standalone",
     "background_color": "#3367D6",
     "theme_color": "#3367D6"

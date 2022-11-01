@@ -16,10 +16,9 @@ async function instalarRecursos( event ) {
     cache.addAll( [
         '/index.html',
         '/app.webmanifest',
-        'src/img/favicon.ico',
-        'src/img/cervejaria-192.png',
-        'src/img/cervejaria-512.png',
-        'src/pages/bebidas-table.html',
+        '/src/img/favicon.ico',
+        '/src/img/cervejaria-192.png',
+        '/src/img/cervejaria-512.png'        
     ] );
 }
 
@@ -46,6 +45,7 @@ async function networkFirst( event ) {
     const cache = await self.caches.open( CACHE_V1 );
     try {
         const resposta = await fetchComTimeout( event.request );        
+        console.log('aaa: ', resposta)
         if ( resposta.ok ) {
             await cache.put( event.request, resposta.clone() );
         }

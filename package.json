@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "parcel app/**/*.html --open",
+    "start": "http-server -p 3000 -c -1 --cors",
     "db": "npx json-server db.json"
   },
   "keywords": [],
