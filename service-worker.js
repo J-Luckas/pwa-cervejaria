@@ -47,13 +47,11 @@ async function networkFirst( event ) {
     
     const cache = await self.caches.open( CACHE_V1 );
     try {
-        if( event.request.method === 'GET' ){
-            const resposta = await fetchComTimeout( event.request );                
-            if ( resposta.ok ) {
-                await cache.put( event.request, resposta.clone() );
-            }
-            return resposta;
+        const resposta = await fetchComTimeout( event.request );                
+        if ( resposta.ok && event.request.method === 'GET' ) {
+            await cache.put( event.request, resposta.clone() );
         }
+        return resposta;
     } catch ( err ) { // ex. NetworkError
         console.log( 'Erro de rede: ', err.message );
         return cache.match( event.request );

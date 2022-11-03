@@ -50,15 +50,16 @@ class BebidasForm {
   }
 
   async salvar( bebidas ) {
-    return fetch('http://localhost:3000/teste', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(bebidas)
+    const allPromises = bebidas.map( (bebida) => fetch('http://localhost:3000/teste', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
         },
-      )
-      
+        body: JSON.stringify(bebida)
+      },
+    ));
+
+    return Promise.all(allPromises) 
   }
 }
 
