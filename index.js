@@ -6,17 +6,15 @@ const salvarPendentesOnline = async () => {
   
   const session = JSON.parse(localStorage.getItem( appConfig.cache.name ));
   if( session && session.bebidas ){
-    
-    const ultimoId = await bebidasForm.pegaUltimoId()
 
     return session.bebidas.map(
       (bebida, i) => {
-        return {
-          id: ultimoId + 1 + i,
+        if( bebida.situcao !== 'SALVAR' ) return null;
+        return {          
           nome: bebida.nome,
         }
       }
-    )
+    ).filter( (bebida) => bebida !== null )
   }
   return
 }
