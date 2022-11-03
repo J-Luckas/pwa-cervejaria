@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "http-server -p 3000 -c -1 --cors",
-    "db": "npx json-server db.json"
+    "start": "http-server -p 3001 -c -1 --cors",
+    "db": "json-server db.json"
   },
   "keywords": [],
   "author": "",

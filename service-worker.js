@@ -5,7 +5,7 @@ function instalar( event )  {
   event.waitUntil( instalarRecursos( event ) );
 }
 
-function buscar ( event ){
+function buscar ( event ){    
   event.respondWith( buscarRecursos( event ) );
 }
 
@@ -18,7 +18,9 @@ async function instalarRecursos( event ) {
         '/app.webmanifest',
         '/src/img/favicon.ico',
         '/src/img/cervejaria-192.png',
-        '/src/img/cervejaria-512.png'        
+        '/src/img/cervejaria-512.png',
+        '/src/pages/bebidas-form.html',
+        '/src/pages/bebidas-table.html',   
     ] );
 }
 
@@ -42,14 +44,16 @@ async function fetchComTimeout( requisicao ) {
 }
 
 async function networkFirst( event ) {
+    
     const cache = await self.caches.open( CACHE_V1 );
     try {
-        const resposta = await fetchComTimeout( event.request );        
-        console.log('aaa: ', resposta)
-        if ( resposta.ok ) {
-            await cache.put( event.request, resposta.clone() );
+        if( event.request.method === 'GET' ){
+            const resposta = await fetchComTimeout( event.request );                
+            if ( resposta.ok ) {
+                await cache.put( event.request, resposta.clone() );
+            }
+            return resposta;
         }
-        return resposta;
     } catch ( err ) { // ex. NetworkError
         console.log( 'Erro de rede: ', err.message );
         return cache.match( event.request );

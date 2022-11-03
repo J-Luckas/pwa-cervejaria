@@ -1,9 +1,10 @@
 import { loadPage } from '../utils/load-page.js';
 import { loadScript } from '../utils/load-script.js';
 
-export function router({
+export async function router({
     path,
-    page = ''
+    page = '',
+    classSelect = null,
 }) {
     const locationHash = getLocation();
 
@@ -15,7 +16,8 @@ export function router({
         page = path.substring(1);
     }
 
-    return loadPage(`/src/pages/${page}.html`);
+    await loadPage(`/src/pages/${page}.html`);
+    return classSelect?.init() || null;
 }
 
 export function getLocation() {
