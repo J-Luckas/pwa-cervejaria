@@ -3,19 +3,17 @@ import { appConfig } from "../config/app.js";
 class BebidasForm {
 
   ultimoId = 1;
-
-  async init() {
-    document.querySelector('#salvar-bebida').addEventListener('submit', async ( e ) => {
-      e.preventDefault()
-
-      if(navigator.onLine) {
+  worker = null;
+  constructor() {
+    this.worker = new Worker(appConfig.workerURL)
+    this.worker.addEventListener('message', async (ev) => {      
+      if(ev.data.message === 'health' && ev.data.health === true) {
         const formValues = {          
           nome: document.querySelector('#nome').value
         }
 
         const res = await this.salvar([formValues]);
         this.ultimoId = (await res[0].value.json()).id;
-        
       }else{
         const session = JSON.parse(localStorage.getItem( appConfig.cache.name ))
         const ultimoIdSessao = (session?.bebidas.length || 0) + this.ultimoId
@@ -30,19 +28,25 @@ class BebidasForm {
             situcao: 'SALVAR'
           }]
         } ) )
-        
       }
     })
   }
 
+  async init() {
+    document.querySelector('#salvar-bebida').addEventListener('submit', async ( e ) => {
+      e.preventDefault()
+      this.worker.postMessage({message: 'health'})
+    })
+  }
+
   async pegaUltimoId() {
-    const response = await fetch('http://localhost:3000/teste')
+    const response = await fetch(appConfig.apiURL)
     const data = await response.json()
     return Number(data[ data.length - 1 ]?.id || 0) 
   }
 
   async salvar( bebidas ) {
-    const allPromises = bebidas.map( (bebida) => fetch('http://localhost:3000/teste', {
+    const allPromises = bebidas.map( (bebida) => fetch(appConfig.apiURL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

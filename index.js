@@ -1,7 +1,7 @@
 import { appConfig } from "./src/config/app.js";
 import bebidasForm from "./src/service/bebidas-form.js";
 
-const worker = new Worker('/bebidas-worker.js');
+const worker = new Worker(appConfig.workerURL);
 const salvarPendentesOnline = async () => {
   
   const session = JSON.parse(localStorage.getItem( appConfig.cache.name ));
