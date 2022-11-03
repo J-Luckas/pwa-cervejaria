@@ -59,7 +59,7 @@ class BebidasForm {
       },
     ));
 
-    return Promise.all(allPromises) 
+    return Promise.allSettled(allPromises) 
   }
 }
 
