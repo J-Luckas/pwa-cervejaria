@@ -6,4 +6,11 @@ self.addEventListener( 'message', ev => {
       health: navigator.onLine ? true : false
     })
   }
+
+  if( message ==='resetar-tabela' ){
+    self.postMessage({
+      message: 'resetar-tabela',
+      health: true
+    })
+  }
 })

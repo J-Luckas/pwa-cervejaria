@@ -1,5 +1,6 @@
 import { appConfig } from "./src/config/app.js";
 import bebidasForm from "./src/service/bebidas-form.js";
+import bebidasTabela from "./src/service/bebidas-tabela.js";
 
 const worker = new Worker(appConfig.workerURL);
 const salvarPendentesOnline = async () => {
@@ -9,7 +10,7 @@ const salvarPendentesOnline = async () => {
 
     return session.bebidas.map(
       (bebida, i) => {
-        if( bebida.situcao !== 'SALVAR' ) return null;
+        if( bebida.situacao !== 'SALVAR' ) return null;
         return {          
           nome: bebida.nome,
         }
@@ -39,7 +40,11 @@ worker.addEventListener('message', async (ev) => {
     if( todasBebidasParaSalvar ) {
       await bebidasForm.salvar( todasBebidasParaSalvar )
       localStorage.removeItem( appConfig.cache.name )
+      worker.postMessage({ message: 'resetar-tabela' })
     }
+  }else if( ev.data.message === 'resetar-tabela' && ev.data.health === true ){
+    if( location.hash !== '#/' ) return
+    await bebidasTabela.init();
   }
 })
 
