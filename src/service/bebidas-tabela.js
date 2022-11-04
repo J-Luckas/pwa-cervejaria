@@ -5,8 +5,32 @@ class BebidasTabela {
   worker = null;
   constructor(){
     this.worker = new Worker(appConfig.workerURL);
-    this.worker.addEventListener('message', async (ev) => {      
-      if(ev.data.message === 'health' && ev.data.health === true) {
+    this.worker.addEventListener('message', async (ev) => { 
+      const deveRemover = ev.data.message === 'health' && ev.data.metodo === 'deletar-bebida'     
+      
+      if( deveRemover && ev.data.health === true  ) {
+        return this.removerBebidaOnline( ev.data.id )
+      }else if( deveRemover && ev.data.health === false){
+        const todasBebidas = (JSON.parse(localStorage.getItem( appConfig.cache.name ))).bebidas
+        const idParaDeletar = ev.data.id
+        
+        const novaListaBebidas = todasBebidas.map( ( bebida ) => {
+          if( bebida.id === Number(idParaDeletar) && bebida.situacao === 'CONCLUIDO') {
+            return { ...bebida, situacao: 'DELETAR' }              
+          }
+
+          if( bebida.id === Number(idParaDeletar) && bebida.situacao === 'SALVAR' ) {
+            return null
+          }
+
+          return bebida
+        } ).filter( bebida => bebida !== null )
+        localStorage.setItem(appConfig.cache.name, JSON.stringify({ bebidas: novaListaBebidas }));
+
+        this.init()
+      }else if(ev.data.message === 'health' && ev.data.health === true) {
+
+
         const allBebidas = await this.getTabela();
         const bebidasFormatadas = allBebidas.map( ({id, nome}) => ({
           id,
@@ -27,6 +51,51 @@ class BebidasTabela {
     return this.worker.postMessage({message: 'health'})
   }
 
+  async removerBebidaOnline( id ) {
+    const res = await fetch( `${appConfig.apiURL}/${id}`, {
+      method: 'DELETE'
+    } )
+
+    if( !res.ok ){
+      console.error( 'falha requisicao de delete' );
+    }
+
+    return this.worker.postMessage({
+      message: 'health'
+    })
+  }
+  async validarRemoverBebida ( idBebida ) {
+      const idBebidaForm = idBebida.replace( 'del-', '' );
+      try {          
+          this.worker.postMessage({
+            message: 'deletar-bebida',
+            idBebida: idBebidaForm
+          })
+          
+      } catch ( error ) {
+          console.error('Não removeu - ', error.message)
+      }
+  };
+
+  async removerListaBebidas ( bebidasId ) {
+
+    const allBebidas = bebidasId.map( ({ id }) => this.removerBebidaOnline( id ));
+
+    return Promise.allSettled( allBebidas )
+  }
+
+  aoDispararRemover(){
+    const delBebidaBotao = document.querySelectorAll('.remover-bebida')
+    delBebidaBotao.forEach( (el) => {
+      el.addEventListener('click', (elem) => {
+        const botao = elem.target
+
+        elem.preventDefault()
+        return this.validarRemoverBebida( botao.id )
+      })
+    })
+  }
+
   desenhar( bebidas ){
     const corpo = document.querySelector( 'tbody' );
     corpo.innerHTML = '';
@@ -43,12 +112,20 @@ class BebidasTabela {
         if( b.situacao === 'CONCLUIDO' || b.situacao === undefined){
           dSituacao.innerText = '✅';
         }
-        
 
-        linha.append( dId, dNome, dSituacao );
+        const dAcoes = document.createElement( 'td' );
+        dAcoes.innerHTML = `<button class='remover-bebida' id='del-${b.id}' >🗑️</button>`;
+        
+        linha.append( dId, dNome, dSituacao, dAcoes );
+
+        if( b.situacao === 'DELETAR'){
+          linha.style.display = 'none';
+        }
+
         fragmento.append( linha );
     }
     corpo.append( fragmento );
+    this.aoDispararRemover();
   }
 
   async getTabela() {

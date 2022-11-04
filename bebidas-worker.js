@@ -13,4 +13,13 @@ self.addEventListener( 'message', ev => {
       health: true
     })
   }
+
+  if( message === 'deletar-bebida' ){
+    self.postMessage({
+      message: 'health',
+      health: navigator.onLine ? true : false,
+      metodo: 'deletar-bebida',
+      id: ev.data.idBebida 
+    })
+  }
 })

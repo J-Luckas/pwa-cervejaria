@@ -17,7 +17,16 @@ class BebidasForm {
         this.ultimoId = (await res[0].value.json()).id;
       }else{
         const session = JSON.parse(localStorage.getItem( appConfig.cache.name ))
-        const ultimoIdSessao = (session?.bebidas.length || 0) + this.ultimoId        
+        let ultimoIdSessao = (session?.bebidas.length || 0) + this.ultimoId        
+
+        const idExists = session.bebidas.find( ( bebida ) => bebida.id === ultimoIdSessao );
+
+        if(idExists) {
+          ultimoIdSessao++
+          this.ultimoId = ultimoIdSessao
+        }
+
+
         localStorage.setItem( appConfig.cache.name, JSON.stringify( {
           bebidas: session?.bebidas ? [ ...session.bebidas, {
             id: ultimoIdSessao,

@@ -20,6 +20,23 @@ const salvarPendentesOnline = async () => {
   return
 }
 
+const deletarPendentesOnline = async () => {
+  
+  const session = JSON.parse(localStorage.getItem( appConfig.cache.name ));
+  if( session && session.bebidas ){
+
+    return session.bebidas.map(
+      (bebida, i) => {
+        if( bebida.situacao !== 'DELETAR' ) return null;
+        return {
+          id: bebida.id,
+        }
+      }
+    ).filter( (bebida) => bebida !== null )
+  }
+  return
+}
+
 window.addEventListener('load', async () => {
   try {
     await navigator.serviceWorker.register('/service-worker.js', {
@@ -39,9 +56,14 @@ worker.addEventListener('message', async (ev) => {
     const todasBebidasParaSalvar = await salvarPendentesOnline();
     if( todasBebidasParaSalvar ) {
       await bebidasForm.salvar( todasBebidasParaSalvar )
-      localStorage.removeItem( appConfig.cache.name )
-      worker.postMessage({ message: 'resetar-tabela' })
     }
+    const todasBebidasParaDeletar = await deletarPendentesOnline();
+    if( todasBebidasParaDeletar ) {
+      await bebidasTabela.removerListaBebidas( todasBebidasParaDeletar );
+    }
+
+    localStorage.removeItem( appConfig.cache.name )
+    worker.postMessage({ message: 'resetar-tabela' })
   }else if( ev.data.message === 'resetar-tabela' && ev.data.health === true ){
     if( location.hash !== '#/' ) return
     await bebidasTabela.init();
