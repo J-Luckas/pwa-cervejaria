@@ -123,8 +123,7 @@ async function staleWhileRevalidate( event ) {
     const cache = await self.caches.open( CACHE_V1 );
     const recursoCache = await cache.match( event.request );
     let recursoRede;    
-    const headReq = await validaOnlineSwr( event );
-    console.log('teste')
+    const headReq = await validaOnlineSwr( event );    
     if ( !recursoCache || headReq ) {
         recursoRede = await fetch(event.request).catch(() => undefined);
 

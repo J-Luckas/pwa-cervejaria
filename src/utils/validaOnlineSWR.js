@@ -1,5 +1,4 @@
-export async function validaOnlineSwr( event ) {
-  console.log('online: ', navigator.onLine)
+export async function validaOnlineSwr( event ) {  
   if( navigator.onLine ) {
     return fetch( event.request, {
         method: 'HEAD'            
