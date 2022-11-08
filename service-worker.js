@@ -1,3 +1,6 @@
+import { appConfig } from "./src/config/app.js";
+import { validaOnlineSwr } from "./src/utils/validaOnlineSWR.js";
+
 self.addEventListener( 'install', instalar );
 self.addEventListener( 'fetch', buscar );
 
@@ -15,12 +18,15 @@ const recursos = {
     'http://localhost:3001/index.html' : 'nf',
     'http://localhost:3001/app.webmanifest' : 'nf',
     'http://localhost:3001/src/img/favicon.ico' : 'nf',
+    'http://localhost:3001/favicon.ico': 'nf',
     'http://localhost:3001/src/img/cervejaria-192.png' : 'nf',
     'http://localhost:3001/src/img/cervejaria-512.png' : 'nf',
     'http://localhost:3001/src/pages/bebidas-form.html' : 'nf',
     'http://localhost:3001/src/pages/bebidas-table.html' : 'nf',
     'http://localhost:3001/src/service/bebidas-form.js' : 'nf',
     'http://localhost:3001/src/service/bebidas-tabela.js' : 'nf',
+    'http://localhost:3001/#/recados' : 'swr',
+    'http://localhost:3001/#/cadastrar' : 'nf',
     'http://localhost:3001/src/pages/recados.html' : 'swr',
     'http://localhost:3001/#/' : 'nf',
     'http://localhost:3001/src/routes/index.routes.js': 'nf',
@@ -31,12 +37,16 @@ const recursos = {
     'http://localhost:3001/bebidas-worker.js': 'nf',
     'http://localhost:3001/src/utils/load-page.js': 'nf',
     'http://localhost:3001/src/utils/load-script.js': 'nf',
+    'http://localhost:3001/src/pages/offline.html': 'nf',
+    'http://localhost:3001/#/offline': 'nf',
     'http://localhost:3000/bebidas': 'nf',
-    'http://localhost:3001/': 'nf'
+    'http://localhost:3001/': 'nf',
+    'http://localhost:3001/src/img/recados/imagem-1.jpg': 'swr',
+    'http://localhost:3001/src/img/recados/imagem-2.jpg': 'swr',
 };
 
 async function analisarEstrategia( event ) {
-
+    
     if('GET' !== event.request.method){
         return networkFirst( event );
     }
@@ -44,6 +54,7 @@ async function analisarEstrategia( event ) {
     const servidor = 'http://127.0.0.1:3001/#/';
     const url = String( event.request.url ).replace( servidor, '' );
     const estrategia = recursos[ url ];
+    console.log('url: ' + url)
     switch ( estrategia ) {
         case 'nf': return networkFirst( event );        
         case 'swr': return staleWhileRevalidate( event );
@@ -55,19 +66,29 @@ async function analisarEstrategia( event ) {
 async function instalarRecursos( event ) {
     const cache = await self.caches.open( CACHE_V1 );
     cache.addAll( [
-        '/index.html',
+        '/index.html',        
         '/app.webmanifest',
         '/src/img/favicon.ico',
         '/src/img/cervejaria-192.png',
         '/src/img/cervejaria-512.png',
         '/src/pages/bebidas-form.html',
         '/src/pages/bebidas-table.html',
-        '/src/pages/recados.html'
+        '/src/service/bebidas-form.js',
+        '/src/service/bebidas-tabela.js',        
+        '/src/pages/recados.html',        
+        '/src/routes/index.routes.js',
+        '/index.js',
+        '/src/routes/app.routes.js',
+        '/src/routes/router.js',
+        '/src/config/app.js',
+        '/bebidas-worker.js',
+        '/src/utils/load-page.js',
+        '/src/utils/load-script.js',
+        'http://localhost:3000/bebidas',
+        '/src/pages/offline.html',        
+        '/src/img/recados/imagem-1.jpg',
+        '/src/img/recados/imagem-2.jpg',            
     ] );
-}
-
-async function buscarRecursos( event ) {
-  return networkFirst( event );
 }
 
 async function fetchComTimeout( requisicao ) {
@@ -94,26 +115,28 @@ async function networkFirst( event ) {
             await cache.put( event.request, resposta.clone() );
         }
         return resposta;
-    } catch ( err ) { // ex. NetworkError
-        console.log( 'Erro de rede: ', err.message );
+    } catch ( err ) { 
         return cache.match( event.request );
     }
 }
 
 async function staleWhileRevalidate( event ) {
-    // Primeiro pega do cache
     const cache = await self.caches.open( CACHE_V1 );
     const recursoCache = await cache.match( event.request );
-    // Depois pega da rede para atualizar o cache
-    let recursoRede;
-    try {
-        recursoRede = await fetchComTimeout( event.request );
-        if ( recursoRede.ok ) {
-            // Terá versão atualizada na próxima vez ;)
+    let recursoRede;    
+    const headReq = await validaOnlineSwr( event );
+    console.log('teste')
+    if ( !recursoCache || headReq ) {
+        recursoRede = await fetch(event.request).catch(() => undefined);
+
+        if (!recursoRede) {
+            return await caches.match(appConfig.offline);
+        }
+
+        if( new Date(headReq.headers.get("last-modified")).getTime() > new Date(recursoCache?.headers.get("last-modified")).getTime() ) {
             await cache.put( event.request, recursoRede.clone() );
         }
-    } catch ( err ) { // ex. NetworkError
-        // Só prossegue
     }
+
     return recursoCache || recursoRede;
 }
