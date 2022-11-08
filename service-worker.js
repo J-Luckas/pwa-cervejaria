@@ -51,8 +51,8 @@ async function analisarEstrategia( event ) {
         return networkFirst( event );
     }
     
-    const servidor = 'http://127.0.0.1:3001/#/';
-    const url = String( event.request.url ).replace( servidor, '' );
+    const servidor = 'http://127.0.0.1:3001/';
+    const url = String( event.request.url ).replace( servidor, 'http://localhost:3001/' );
     const estrategia = recursos[ url ];
     switch ( estrategia ) {
         case 'nf': return networkFirst( event );        
