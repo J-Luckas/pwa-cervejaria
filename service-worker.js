@@ -54,7 +54,6 @@ async function analisarEstrategia( event ) {
     const servidor = 'http://127.0.0.1:3001/#/';
     const url = String( event.request.url ).replace( servidor, '' );
     const estrategia = recursos[ url ];
-    console.log('url: ' + url)
     switch ( estrategia ) {
         case 'nf': return networkFirst( event );        
         case 'swr': return staleWhileRevalidate( event );

@@ -1,5 +1,15 @@
 <form id="salvar-bebida" action="">
   <label for="nome">Nome</label>
-  <input required type="text" name="nome" id="nome" placeholder="Nome"/>
+  <input required minlength="2" maxlength="50" type="text" name="nome" id="nome" placeholder="Nome"/>
+  <label for="fabricante">Fabricante</label>
+  <input required minlength="2" maxlength="50" type="text" name="fabricante" id="fabricante" placeholder="Fabricante"/>
+  <label for="tipo">Tipo</label>
+  <input minlength="2" maxlength="50" type="text" name="tipo" id="tipo" placeholder="Tipo"/>
+  <label for="nota">Nota</label>
+  <input type="number" min="1" max="5" name="nota" id="nota" placeholder="Nota"/>
+  <label for="foto">Foto</label>
+  <textarea id="foto" name="foto" id="" cols="30" rows="10"></textarea>
+  <label for="origem">Origem</label>
+  <input type="text" name="origem" id="origem" placeholder="Origem"/>
   <button type="submit">Salvar</button>
 </form>

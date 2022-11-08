@@ -10,7 +10,12 @@ class BebidasForm {
 
       if(ev.data.message === 'health' && ev.data.health === true) {
         const formValues = {          
-          nome: document.querySelector('#nome').value
+          nome: document.querySelector('#nome').value,
+          fabricante: document.querySelector('#fabricante').value,
+          tipo: document.querySelector('#tipo').value,
+          nota: document.querySelector('#nota').value,
+          foto: document.querySelector('#foto').value,
+          origem: document.querySelector('#origem').value
         }
 
         const res = await this.salvar([formValues]);
@@ -19,7 +24,7 @@ class BebidasForm {
         const session = JSON.parse(localStorage.getItem( appConfig.cache.name ))
         let ultimoIdSessao = (session?.bebidas.length || 0) + this.ultimoId        
 
-        const idExists = session.bebidas.find( ( bebida ) => bebida.id === ultimoIdSessao );
+        const idExists = session?.bebidas.find( ( bebida ) => bebida.id === ultimoIdSessao );
 
         if(idExists) {
           ultimoIdSessao++
@@ -31,10 +36,20 @@ class BebidasForm {
           bebidas: session?.bebidas ? [ ...session.bebidas, {
             id: ultimoIdSessao,
             nome: document.querySelector('#nome').value,
+            fabricante: document.querySelector('#fabricante').value,
+            tipo: document.querySelector('#tipo').value,
+            nota: document.querySelector('#nota').value,
+            foto: document.querySelector('#foto').value,
+            origem: document.querySelector('#origem').value,
             situacao: 'SALVAR'
           } ] : [{
             id: ultimoIdSessao,
             nome: document.querySelector('#nome').value,
+            fabricante: document.querySelector('#fabricante').value,
+            tipo: document.querySelector('#tipo').value,
+            nota: document.querySelector('#nota').value,
+            foto: document.querySelector('#foto').value,
+            origem: document.querySelector('#origem').value,
             situacao: 'SALVAR'
           }]
         } ) )

@@ -11,9 +11,9 @@ const salvarPendentesOnline = async () => {
     return session.bebidas.map(
       (bebida, i) => {
         if( bebida.situacao !== 'SALVAR' ) return null;
-        return {          
-          nome: bebida.nome,
-        }
+        const { id, situacao, ...bebidaRetornoSemId} = bebida
+        
+        return bebidaRetornoSemId
       }
     ).filter( (bebida) => bebida !== null )
   }

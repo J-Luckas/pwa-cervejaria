@@ -32,9 +32,8 @@ class BebidasTabela {
 
 
         const allBebidas = await this.getTabela();
-        const bebidasFormatadas = allBebidas.map( ({id, nome}) => ({
-          id,
-          nome,
+        const bebidasFormatadas = allBebidas.map( (bebida) => ({
+          ...bebida,
           situacao: 'CONCLUIDO'
         }) );
 
@@ -107,8 +106,31 @@ class BebidasTabela {
         const dNome = document.createElement( 'td' );
         dNome.innerText = b.nome;
 
+        const dFabricante = document.createElement( 'td' );
+        dFabricante.innerText = b.fabricante;
+
+        const dTipo = document.createElement( 'td' );
+        dTipo.innerText = b.tipo || '';
+
+        const dNota = document.createElement( 'td' );
+        dNota.innerText = b.nota || '';
+        
+        const dFoto = document.createElement( 'td' );
+        
+        if( b.foto ){
+          const foto = document.createElement( 'img' );
+          foto.src = `data:image/png;base64,${b.foto}`;
+          foto.width = 100
+          dFoto.append(foto);        
+        }else{
+          dFoto.innerText = '';
+        }
+        
+        const dOrigem = document.createElement( 'td' );
+        dOrigem.innerText = b.origem || '';
+
         const dSituacao = document.createElement( 'td' );
-        dSituacao.innerText = '❌';
+        dSituacao.innerText = '❌';        
         if( b.situacao === 'CONCLUIDO' || b.situacao === undefined){
           dSituacao.innerText = '✅';
         }
@@ -116,7 +138,7 @@ class BebidasTabela {
         const dAcoes = document.createElement( 'td' );
         dAcoes.innerHTML = `<button class='remover-bebida' id='del-${b.id}' >🗑️</button>`;
         
-        linha.append( dId, dNome, dSituacao, dAcoes );
+        linha.append( dId, dNome, dFabricante, dTipo, dNota, dFoto, dOrigem, dSituacao, dAcoes );
 
         if( b.situacao === 'DELETAR'){
           linha.style.display = 'none';

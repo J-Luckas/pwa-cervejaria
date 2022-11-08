@@ -1,8 +1,3 @@
 {
-  "bebidas": [
-    {
-      "nome": "heineken",
-      "id": 1
-    }
-  ]
+  "bebidas": []
 }
